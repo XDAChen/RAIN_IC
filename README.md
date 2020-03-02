@@ -1,7 +1,8 @@
 # RAIN_IC
  Yasra, Jeremy
  
- Configured the pins for the RAIN IC
+ Configured the pins for the RAIN IC.
+ 
  list of things we need to complete for this code:
  1: finish  defining coressponding register addresses and its value 
  2: transmit the settings above using HAL_SPI_Transmit Api
