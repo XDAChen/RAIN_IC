@@ -13,7 +13,7 @@
  3: synchoniztion mechanism: i have the idea but i need to update you about this
  4: how to visualize data output: need to be discussed
  
- Now we have the skeleton code, it is a good time split up the work. I will talk to you about this tommrow
+ Yasra, now we have the skeleton code, it is a good time split up the work. I will talk to you about this tommrow
  
  Thanks
  Chen
