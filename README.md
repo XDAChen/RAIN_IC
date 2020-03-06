@@ -1,5 +1,5 @@
 # RAIN_IC
- Yasra, Jeremy
+ Yasra,
 see if can flash the code into MCU 
  Thanks
  Chen
