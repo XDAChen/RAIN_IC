@@ -92,6 +92,8 @@ void Error_Handler(void);
 #define CRC_ERR_LED_GPIO_Port GPIOB
 #define TAG_LED_Pin GPIO_PIN_6
 #define TAG_LED_GPIO_Port GPIOC
+#define SYNC_OUT_Pin GPIO_PIN_8
+#define SYNC_OUT_GPIO_Port GPIOC
 #define IRQ_Pin GPIO_PIN_9
 #define IRQ_GPIO_Port GPIOA
 #define IRQ_EXTI_IRQn EXTI9_5_IRQn

@@ -48,6 +48,7 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 typedef unsigned char BYTE;    /* defined all necessary registers here correctly*/
 BYTE RSSI_Reg = 0x6b;          /*RSSI Reg*/
+BYTE enter_directmode = 0x81; /*send this via SPI enables direct mode, in direct mode the IC works as simple RF front end*/
 
 uint8_t buffer_rx[1];
 /* USER CODE END PV */
@@ -98,25 +99,39 @@ int main(void)
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-HAL_SPI_Transmit(&hspi1, spi_inputData, 1, 10); /*Yasra, if you have time, set up the IC using SPI here. refer to the register description from the data sheet*/
-HAL_SPI_Transmit(&hspi1, spi_inputData, datasize, timeout);
-HAL_SPI_Transmit(&hspi1, spi_inputData, datasize, timeout);
-HAL_SPI_Transmit(&hspi1, spi_inputData, datasize, timeout);
-HAL_SPI_Transmit(&hspi1, spi_inputData, datasize, timeout);
-HAL_SPI_Transmit(&hspi1, spi_inputData, datasize, timeout);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10 , GPIO_PIN_SET );
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+  void direct_mode(){
+        HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_RESET);
+        HAL_Delay(20);
+        HAL_SPI_Transmit(&hspi1, enter_directmode, 1, 10); /*enters the direct mode*/
+        HAL_Delay(20);
+        HAL_GPIO_WritePin(GPIOA,GPIO_PIN_4, GPIO_PIN_SET);
+         }
 
+
+  GPIO_PinState ISG = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9);
+  uint8_t flag = 0; /*whether this node has gone into direct mode or not;*/
   /* USER CODE END 2 */
- 
  
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-HAL_SPI_TransmitReceive(&hspi1,RSSI_Reg, buffer_rx,1,10); /*here we read the RSSI status pin by RSSI register and output the data*/
-    /* USER CODE BEGIN 3 */
-  }
+
+
+           /* Infinite loop */
+           /* USER CODE BEGIN WHILE */
+            if (flag != 0 && ISG ==SET){
+                  direct_mode();
+                  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+                  flag = 1;
+            }
+
+             /* USER CODE BEGIN 3 */
+           }
+
   /* USER CODE END 3 */
 }
 
@@ -262,8 +277,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, PA_SW_V1_Pin|NCS_Pin|EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, PA_SW_V2_Pin|TAG_LED_Pin|RF_LED_Pin|TUNED_LED_Pin 
-                          |TUNNING_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, PA_SW_V2_Pin|TAG_LED_Pin|SYNC_OUT_Pin|RF_LED_Pin 
+                          |TUNED_LED_Pin|TUNNING_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, ANT1_LED_Pin|ANT1_LEDB2_Pin|ANT_SW_V1_Pin|ANT_SW_V2_Pin 
@@ -280,10 +295,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA_SW_V2_Pin TAG_LED_Pin RF_LED_Pin TUNED_LED_Pin 
-                           TUNNING_LED_Pin */
-  GPIO_InitStruct.Pin = PA_SW_V2_Pin|TAG_LED_Pin|RF_LED_Pin|TUNED_LED_Pin 
-                          |TUNNING_LED_Pin;
+  /*Configure GPIO pins : PA_SW_V2_Pin TAG_LED_Pin SYNC_OUT_Pin RF_LED_Pin 
+                           TUNED_LED_Pin TUNNING_LED_Pin */
+  GPIO_InitStruct.Pin = PA_SW_V2_Pin|TAG_LED_Pin|SYNC_OUT_Pin|RF_LED_Pin 
+                          |TUNED_LED_Pin|TUNNING_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
